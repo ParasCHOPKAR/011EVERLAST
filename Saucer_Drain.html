@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Responsive Navbar with Sidebar Dropdown</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f9f9f9;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 20px 80px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: transparent;
+      transition: background 0.4s ease, box-shadow 0.4s ease;
+      z-index: 1000;
+    }
+
+    .navbar.scrolled {
+      background: rgba(0, 0, 0, 0.85);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo img {
+      height: 50px;
+    }
+
+    .menu-toggle {
+      display: none;
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+      list-style: none;
+    }
+
+    .nav-links li {
+      position: relative;
+    }
+
+    .nav-links > li > a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links > li > a:hover {
+      color: brown;
+    }
+
+    .dropdown-menu,
+    .sub-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      background: #fff;
+      min-width: 200px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .dropdown-menu a,
+    .sub-dropdown-menu a {
+      display: block;
+      padding: 10px 15px;
+      color: #333;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .dropdown-menu a:hover,
+    .sub-dropdown-menu a:hover {
+      background: brown;
+      color: white;
+    }
+
+    .nav-links li:hover > .dropdown-menu {
+      display: flex;
+    }
+
+    .sub-dropdown:hover > .sub-dropdown-menu {
+      display: flex;
+      top: 0;
+      left: 100%;
+    }
+
+    .dropdown-arrow {
+      font-size: 12px;
+    }
+
+    /* ----------- MOBILE VIEW ----------- */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.95); /* <-- Mobile-only navbar background */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      .nav-links {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        height: 100vh;
+        width: 280px;
+        background: rgba(0, 0, 0, 0.95);
+        flex-direction: column;
+        padding: 80px 20px;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+      }
+
+      .nav-links.active {
+        left: 0;
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+      }
+
+      .overlay.show {
+        display: block;
+      }
+
+      .nav-links li {
+        width: 100%;
+      }
+
+      .nav-links > li > a {
+        color: white;
+        padding: 12px 20px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .dropdown-menu,
+      .sub-dropdown-menu {
+        position: static;
+        display: none;
+        background: #222;
+        box-shadow: none;
+        width: 100%;
+      }
+
+      .dropdown-menu a,
+      .sub-dropdown-menu a {
+        color: white;
+        padding-left: 30px;
+      }
+
+      .sub-dropdown-menu {
+        padding-left: 10px;
+      }
+
+      .dropdown-menu.show,
+      .sub-dropdown-menu.show {
+        display: flex !important;
+        flex-direction: column;
+      }
+
+      .nav-links li:hover > .dropdown-menu,
+      .sub-dropdown:hover > .sub-dropdown-menu {
+        display: none;
+      }
+
+      .nav-links .dropdown-toggle {
+        cursor: pointer;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar" id="navbar">
+    <div class="logo">
+      <img src="images/logo.png" alt="Logo" />
+    </div>
+    <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="Index.html">HOME</a></li>
+      <li>
+        <a href="product.html" class="dropdown-toggle">PRODUCTS <span class="dropdown-arrow">▾</span></a>
+        <ul class="dropdown-menu">
+          <li class="sub-dropdown">
+            <a href="Paver_block.html">PAVER BLOCKS <span class="dropdown-arrow">▸</span></a>
+            <ul class="sub-dropdown-menu">
+              <li><a href="Paver_block.html">Rough Finish</a></li>
+              <li><a href="Paver_block.html">Matte Finish</a></li>
+              <li><a href="Paver_block.html">Rubber Mould Finish</a></li>
+              <li><a href="Paver_block.html">Chequered Tile</a></li>
+              <li><a href="Paver_block.html">High Strength Paver</a></li>
+              <li><a href="Paver_block.html">Eco Paver</a></li>
+            </ul>
+          </li>
+          <li><a href="Chequered_Tiles.html">CHEQUERED TILES</a></li>
+          <li><a href="Concrete_Kerbstone.html">CONCRETE KERBSTORE</a></li>
+          <li class="sub-dropdown">
+            <a href="chamber_cover.html">CHAMBER COVER <span class="dropdown-arrow">▸</span></a>
+            <ul class="sub-dropdown-menu">
+              <li><a href="chamber_cover.html">Low Duty</a></li>
+              <li><a href="chamber_cover.html">Medium Duty</a></li>
+              <li><a href="chamber_cover.html">Heavy Duty</a></li>
+              <li><a href="chamber_cover.html">Extra Heavy Duty</a></li>
+            </ul>
+          </li>
+          <li class="sub-dropdown">
+            <a href="U_Dtrain.html">U-DRAIN <span class="dropdown-arrow">▸</span></a>
+            <ul class="sub-dropdown-menu">
+              <li><a href="U_Dtrain.html">300×300×2000mm</a></li>
+              <li><a href="U_Dtrain.html">450×450×2000mm</a></li>
+            </ul>
+          </li>
+          <li><a href="Bollard.html">RCC PRECAST BOLLARD</a></li>
+          <li><a href="Saucer_Drain.html">SOURCE DRAIN</a></li>
+          <li><a href="Rcc_Tree_Gaurd.html">TREE GRATING</a></li>
+          <li><a href="manhole_cover.html">CABLE TRENCH COVER</a></li>
+          <li><a href="Concrete_Manhole_Cover.html">DRAIN COVER</a></li>
+        </ul>
+      </li>
+      <li><a href="About.html">ABOUT US</a></li>
+      <li><a href="Contact.html">CONTACT US</a></li>
+    </ul>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- JavaScript -->
+  <script>
+    const navbar = document.getElementById('navbar');
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    const overlay = document.getElementById('overlay');
+
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      overlay.classList.toggle('show');
+    });
+
+    overlay.addEventListener('click', () => {
+      navLinks.classList.remove('active');
+      overlay.classList.remove('show');
+      closeAllMenus();
+    });
+
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+      toggle.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768) {
+          e.preventDefault();
+          const menu = toggle.nextElementSibling;
+          menu.classList.toggle('show');
+          closeOthers(menu, '.dropdown-menu');
+        }
+      });
+    });
+
+    document.querySelectorAll('.sub-dropdown > a').forEach(sub => {
+      sub.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768) {
+          e.preventDefault();
+          const subMenu = sub.nextElementSibling;
+          subMenu.classList.toggle('show');
+          closeOthers(subMenu, '.sub-dropdown-menu');
+        }
+      });
+    });
+
+    function closeOthers(current, selector) {
+      document.querySelectorAll(selector).forEach(menu => {
+        if (menu !== current) menu.classList.remove('show');
+      });
+    }
+
+    function closeAllMenus() {
+      document.querySelectorAll('.dropdown-menu, .sub-dropdown-menu').forEach(menu => {
+        menu.classList.remove('show');
+      });
+    }
+
+    document.querySelectorAll('.nav-links > li > a:not(.dropdown-toggle)').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          navLinks.classList.remove('active');
+          overlay.classList.remove('show');
+          closeAllMenus();
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paver Blocks</title>
+
+  <!-- Font Awesome CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js" defer></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+background: linear-gradient(135deg, #fbe8d3, #f5e0c3);
+    }
+
+    /* Section Banner */
+    .banner {
+      background-image: url('images/SOURCEDRAIN.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      padding: 130px 20px 80px;
+      text-align: center;
+    }
+
+    .banner h2 {
+      color: #8b1a18;
+      font-size: 30px;
+      margin-bottom: 15px;
+    }
+
+    .banner p {
+      max-width: 800px;
+      margin: 0 auto;
+      font-size: 16px;
+      color: #555;
+    }
+
+    /* Product Card */
+    .product-container {
+      display: flex;
+      justify-content: center;
+      padding: 60px 20px 40px;
+    }
+
+    .product-card {
+      width: 100%;
+      max-width: 350px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+      max-height: 315px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-card.active {
+      max-height: 650px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .info {
+      padding: 15px;
+      text-align: center;
+    }
+
+    .info h3 {
+      margin: 0 0 10px;
+      color: #800000;
+      font-size: 18px;
+    }
+
+    .toggle-btn {
+      padding: 8px 16px;
+      background-color: #800000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .toggle-btn:hover {
+      background-color: #a00000;
+    }
+
+    .product-details {
+      display: none;
+      padding: 15px;
+      background-color: #fafafa;
+      font-size: 14px;
+      border-top: 1px solid #ddd;
+    }
+
+    .product-card.active .product-details {
+      display: block;
+    }
+
+    /* WhatsApp Button */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 1000;
+      animation: popup 1.5s ease-in-out infinite;
+    }
+
+    .whatsapp-float img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .whatsapp-float img:hover {
+      transform: scale(1.2);
+    }
+
+    @keyframes popup {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.8; }
+    }
+
+    /* Footer */
+    footer {
+      background: linear-gradient(135deg, #000000, #222222, #000000);
+      padding: 40px 20px 20px;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      position: relative;
+    }
+
+    footer::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: url('https://www.transparenttextures.com/patterns/hexellence.png');
+      opacity: 0.05;
+      background-size: 200px;
+      z-index: 0;
+    }
+
+    .footer-content {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .footer-column {
+      flex: 1 1 250px;
+      padding: 10px;
+      min-width: 200px;
+    }
+
+    .footer-column h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .footer-column ul {
+      list-style: none;
+      padding-left: 0;
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .footer-column a {
+      color: whitesmoke;
+      text-decoration: none;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      margin-top: 25px;
+      font-size: 14px;
+      color: #fff;
+      z-index: 1;
+      position: relative;
+    }
+
+    .social-icons {
+      text-align: center;
+      margin-top: 20px;
+      z-index: 1;
+      position: relative;
+    }
+
+    .social-icons a {
+      margin: 0 10px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Section Banner -->
+<section class="banner">
+
+ 
+
+<h2 style="color: #8b1a18; text-align: center; font-size: 30px; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);">
+ Saucer Drain
+</h2>
+
+ <p style="text-align: center; max-width: 800px; margin: 10px auto 30px; font-size: 16px; color: #222; font-weight: 600;">
+Leading Manufacturer of Saucer Drain from Pune.
+</p>
+
+
+</section>
+
+<!-- Product Card -->
+<div class="product-container">
+  <div class="product-card">
+    <img src="images/Saucer Drain.webp" alt="Short Blast Paver Block" />
+    <div class="info">
+      <h3>Saucer Drain</h3>
+      <button class="toggle-btn">View Details</button>
+    </div>
+    <div class="product-details">
+        <p><strong>Material:</strong> RCC</p>
+        <p><strong>Thickness:</strong> 	75mm</p>
+        <p><strong>Compressive Strength:</strong> M25</p>
+        <p><strong>Brand</strong> DD</p>
+        <p><strong>Size/Dimension:</strong> 300X600X75MM</p>
+        <p><strong>Country of Origin:</strong> Made in India</p>
+    </div>
+  </div>
+</div>
+
+<!-- WhatsApp Floating Button -->
+<div class="whatsapp-float">
+  <a href="https://wa.me/919146428456?text=Hello%2C%20I%20am%20interested%20in%20your%20services." target="_blank" title="Chat on WhatsApp">
+    <img src="images/Whatsapp.png" alt="WhatsApp">
+  </a>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-content">
+    <!-- Logo & About -->
+    <div class="footer-column">
+      <div style="font-size: 24px; font-weight: 700; color: #fff; line-height: 1.2;">
+        EVERLAST
+      </div>
+      <p style="font-size: 14px; color: whitesmoke; line-height: 1.6; margin-top: 10px;">
+        We manufacture and supply high-quality Paver Blocks, Kerb Stones, and Manhole Covers, ensuring durability and excellence for all your construction and landscaping needs.
+      </p>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="footer-column">
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="index.html">HOME</a></li>
+        <li><a href="product.html">PRODUCTS</a></li>
+        <li><a href="About.html">ABOUT US</a></li>
+        <li><a href="contact.html">CONTACT US</a></li>
+      </ul>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="footer-column">
+      <h3>Contact Info</h3>
+      <ul>
+        <li><i class="fa-solid fa-phone"></i> <a href="tel:+919146428456">+91 08047641270</a></li>
+        <li><i class="fa-solid fa-envelope"></i> <a href="mailto:comficotton@gmail.com">comficotton@gmail.com</a></li>
+        <li><i class="fa-solid fa-location-dot"></i> Sr. No. 132, Mhasoba Vasti, Keshav Nagar, Pune-411037</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Social Icons -->
+  <div class="social-icons">
+    <a href="https://facebook.com" target="_blank"><img src="https://cdn-icons-png.flaticon.com/24/733/733547.png" alt="Facebook"></a>
+    <a href="https://instagram.com" target="_blank"><img src="https://cdn-icons-png.flaticon.com/24/2111/2111463.png" alt="Instagram"></a>
+    <a href="https://wa.me/919146428456" target="_blank"><img src="https://cdn-icons-png.flaticon.com/24/733/733585.png" alt="WhatsApp"></a>
+  </div>
+
+  <!-- Bottom Text -->
+  <div class="footer-bottom">
+    © 2025 Everlast. All rights reserved. <br>
+    <div>Developed By DW INNOVATION PVT. LTD.</div>
+  </div>
+</footer>
+
+<!-- JS: Toggle product details -->
+<script>
+  const button = document.querySelector('.toggle-btn');
+  const card = document.querySelector('.product-card');
+
+  button.addEventListener('click', function () {
+    const isActive = card.classList.contains('active');
+    card.classList.toggle('active');
+    this.textContent = isActive ? 'View Details' : 'Hide Details';
+  });
+</script>
+
+</body>
+</html>
